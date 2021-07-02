@@ -17,9 +17,11 @@ import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
 import net.essentialsx.api.v2.services.discord.InteractionController;
 import net.essentialsx.api.v2.services.discord.InteractionException;
+import net.essentialsx.api.v2.services.discord.InteractionMember;
 import net.essentialsx.api.v2.services.discord.MessageType;
 import net.essentialsx.api.v2.services.discord.Unsafe;
 import net.essentialsx.discord.interactions.InteractionControllerImpl;
+import net.essentialsx.discord.interactions.InteractionMemberImpl;
 import net.essentialsx.discord.interactions.commands.ExecuteCommand;
 import net.essentialsx.discord.interactions.commands.ListCommand;
 import net.essentialsx.discord.interactions.commands.MessageCommand;
@@ -383,6 +385,12 @@ public class JDADiscordService implements DiscordService {
                 jda = null;
             }
         }
+    }
+
+    public CompletableFuture<InteractionMember> getMemberById(final String id) {
+        final CompletableFuture<InteractionMember> future = new CompletableFuture<>();
+        getGuild().retrieveMemberById(id).queue(member -> future.complete(new InteractionMemberImpl(member)));
+        return future;
     }
 
     public JDA getJda() {
