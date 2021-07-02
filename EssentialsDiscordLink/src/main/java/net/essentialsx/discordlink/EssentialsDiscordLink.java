@@ -71,7 +71,8 @@ public class EssentialsDiscordLink extends JavaPlugin {
             }
         }
 
-        ess.getPermissionsHandler().registerContext("essentials:linked", player -> Collections.singleton(String.valueOf(linkManager.isLinked(player.getUniqueId()))), () -> ImmutableSet.of("true", "false"));
+        ess.getPermissionsHandler().registerContext("essentials:linked", player ->
+                Collections.singleton(String.valueOf(linkManager.isLinked(player.getUniqueId()))), () -> ImmutableSet.of("true", "false"));
 
         if (metrics == null) {
             metrics = new MetricsWrapper(this, 11462, false);

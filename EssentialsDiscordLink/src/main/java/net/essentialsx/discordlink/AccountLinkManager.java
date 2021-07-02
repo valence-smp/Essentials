@@ -3,7 +3,6 @@ package net.essentialsx.discordlink;
 import com.earth2me.essentials.IEssentialsModule;
 import net.ess3.api.IUser;
 import net.essentialsx.api.v2.services.discord.InteractionMember;
-import net.essentialsx.discord.JDADiscordService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -81,7 +80,7 @@ public class AccountLinkManager implements IEssentialsModule {
     public boolean removeAccount(final IUser user) {
         final String id = getDiscordId(user.getBase().getUniqueId());
         if (storage.remove(user.getBase().getUniqueId())) {
-            ((JDADiscordService) ess.getApi()).getMemberById(id).thenAccept(member -> ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(user, member, false)));
+            ess.getApi().getMemberById(id).thenAccept(member -> ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(user, member, false)));
             return true;
         }
         return false;

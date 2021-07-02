@@ -387,9 +387,16 @@ public class JDADiscordService implements DiscordService {
         }
     }
 
+    @Override
     public CompletableFuture<InteractionMember> getMemberById(final String id) {
         final CompletableFuture<InteractionMember> future = new CompletableFuture<>();
-        getGuild().retrieveMemberById(id).queue(member -> future.complete(new InteractionMemberImpl(member)));
+        getGuild().retrieveMemberById(id).queue(member -> {
+            if (member != null) {
+                future.complete(new InteractionMemberImpl(member));
+                return;
+            }
+            future.complete(null);
+        });
         return future;
     }
 

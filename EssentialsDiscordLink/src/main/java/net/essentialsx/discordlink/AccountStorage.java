@@ -23,16 +23,16 @@ import java.util.logging.Logger;
 public class AccountStorage {
     private final static Logger logger = Logger.getLogger("EssentialsDiscordLink");
     private final Gson gson = new Gson();
-    private final EssentialsDiscordLink ess;
+    private final EssentialsDiscordLink plugin;
     private final File accountFile;
     private final ConcurrentHashMap<String, String> uuidToDiscordIdMap;
     private final AtomicBoolean mapDirty = new AtomicBoolean(false);
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-    public AccountStorage(final EssentialsDiscordLink ess) throws IOException {
-        this.ess = ess;
-        this.accountFile = new File(ess.getDataFolder(), "accounts.json");
-        if (!ess.getDataFolder().exists() && !ess.getDataFolder().mkdirs()) {
+    public AccountStorage(final EssentialsDiscordLink plugin) throws IOException {
+        this.plugin = plugin;
+        this.accountFile = new File(plugin.getDataFolder(), "accounts.json");
+        if (!plugin.getDataFolder().exists() && !plugin.getDataFolder().mkdirs()) {
             throw new IOException("Unable to create account file!");
         }
         if (!accountFile.exists() && !accountFile.createNewFile()) {
@@ -49,7 +49,7 @@ public class AccountStorage {
                 return;
             }
 
-            if (ess.getEss().getSettings().isDebug()) {
+            if (plugin.getEss().getSettings().isDebug()) {
                 logger.log(Level.INFO, "Saving linked discord accounts to disk...");
             }
 
