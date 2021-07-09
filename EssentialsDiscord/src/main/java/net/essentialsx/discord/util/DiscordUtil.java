@@ -19,7 +19,6 @@ import net.essentialsx.discord.JDADiscordService;
 import okhttp3.OkHttpClient;
 import org.bukkit.Bukkit;
 
-import java.awt.Color;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -123,23 +122,39 @@ public final class DiscordUtil {
     }
 
     /**
+     * Gets the highest role of a given member or an empty string if the member has no roles.
+     *
+     * @param member The target member.
+     * @return The highest role or blank string.
+     */
+    public static String getRoleFormat(Member member) {
+        final List<Role> roles = member.getRoles();
+
+        if (roles.isEmpty()) {
+            return "";
+        }
+
+        return roles.get(0).getName();
+    }
+
+    /**
      * Gets the uppermost bukkit color code of a given member or an empty string if the server version is &lt; 1.16.
      *
      * @param member The target member.
      * @return The bukkit color code or blank string.
      */
     public static String getRoleColorFormat(Member member) {
-        final Color color = member.getColor();
+        final int rawColor = member.getColorRaw();
 
-        if (color == null) {
+        if (rawColor == Role.DEFAULT_COLOR_RAW) {
             return "";
         }
 
         if (VersionUtil.getServerBukkitVersion().isHigherThanOrEqualTo(VersionUtil.v1_16_1_R01)) {
             // Essentials' FormatUtil allows us to not have to use bungee's chatcolor since bukkit's own one doesn't support rgb
-            return FormatUtil.replaceFormat("&#" + Integer.toHexString(color.getRGB()).substring(2));
+            return FormatUtil.replaceFormat("&#" + Integer.toHexString(rawColor).substring(2));
         }
-        return FormatUtil.replaceFormat("&" + DownsampleUtil.nearestTo(color.getRGB()));
+        return FormatUtil.replaceFormat("&" + DownsampleUtil.nearestTo(rawColor));
     }
 
     /**
