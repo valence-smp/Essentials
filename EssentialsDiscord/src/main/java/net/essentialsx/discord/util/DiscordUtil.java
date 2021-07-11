@@ -144,11 +144,10 @@ public final class DiscordUtil {
      * @return The bukkit color code or blank string.
      */
     public static String getRoleColorFormat(Member member) {
-        final int rawColor = member.getColorRaw();
-
-        if (rawColor == Role.DEFAULT_COLOR_RAW) {
+        if (member.getColorRaw() == Role.DEFAULT_COLOR_RAW) {
             return "";
         }
+        final int rawColor = 0xff000000 | member.getColorRaw();
 
         if (VersionUtil.getServerBukkitVersion().isHigherThanOrEqualTo(VersionUtil.v1_16_1_R01)) {
             // Essentials' FormatUtil allows us to not have to use bungee's chatcolor since bukkit's own one doesn't support rgb
@@ -191,7 +190,7 @@ public final class DiscordUtil {
             return;
         }
 
-        final DiscordMessageEvent event = new DiscordMessageEvent(messageType, FormatUtil.stripFormat(message), allowPing, avatarUrl, name, uuid);
+        final DiscordMessageEvent event = new DiscordMessageEvent(messageType, FormatUtil.stripFormat(message), allowPing, avatarUrl, FormatUtil.stripFormat(name), uuid);
 
         // If the server is stopping, we cannot dispatch events.
         if (messageType == MessageType.DefaultTypes.SERVER_STOP) {
