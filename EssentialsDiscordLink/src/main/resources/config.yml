@@ -14,8 +14,37 @@
 # - none: Places no restrictions on players for unlinked accounts.
 link-policy: none
 
-# The Discord invite URL that will be shown when a player is told to link their account
+# The Discord invite URL that will be shown when a player is told to link their account.
 discord-url: "https://discord.gg/invite-code"
 
-# Whether or not to ignore Discord messages from unlinked members and hide them from Minecraft chat.
+# Whether to ignore Discord messages from unlinked members and hide them from Minecraft chat.
 block-unlinked-chat: false
+
+# Whether someone's Minecraft account should be unlinked when they leave the Discord server.
+unlink-on-leave: true
+
+# MC group to Discord role sync settings
+# Allows for the ability to give players discord roles based on their Minecraft groups and/or give players Minecraft
+# groups based on their Discord roles.
+role-sync:
+  # Whether EssentialsX DiscordLink should remove synced Discord roles from players who unlink their Minecraft account
+  # or leave the Discord server.
+  remove-roles: true
+  # Whether EssentialsX DiscordLink should remove synced Minecraft groups from players who unlink their Discord account.
+  remove-groups: true
+  # The amount of time (in minutes) between which EssentialsX DiscordLink should audit player groups/roles.
+  resync-delay: 5
+  # Whether EssentialsX DiscordLink should only consider the primary group of Minecraft users
+  primary-group-only: false
+  # Minecraft group to Discord role ID synchronization.
+  # Players in the following groups listed here will receive the corresponding role ID on discord when they link
+  # their Minecraft account to their Discord account.
+  groups:
+    default: 000000000000000000
+    admin: 11111111111111111
+  # Discord role ID to Minecraft group synchronization.
+  # Users with the following roles listed here will receive the corresponding group in Minecraft when they link
+  # their Discord account to their Minecraft account.
+  roles:
+    22222222222222222: vip
+    33333333333333333: booster
