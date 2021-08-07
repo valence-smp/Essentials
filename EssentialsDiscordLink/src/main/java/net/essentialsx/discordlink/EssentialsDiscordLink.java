@@ -8,6 +8,7 @@ import net.essentialsx.api.v2.services.discord.InteractionException;
 import net.essentialsx.discord.EssentialsDiscord;
 import net.essentialsx.discordlink.commands.discord.AccountInteractionCommand;
 import net.essentialsx.discordlink.commands.discord.LinkInteractionCommand;
+import net.essentialsx.discordlink.commands.discord.RoleInfoCommand;
 import net.essentialsx.discordlink.commands.discord.UnlinkInteractionCommand;
 import net.essentialsx.discordlink.listeners.LinkBukkitListener;
 import org.bukkit.command.Command;
@@ -64,6 +65,7 @@ public class EssentialsDiscordLink extends JavaPlugin {
                 api.getInteractionController().registerCommand(new AccountInteractionCommand(linkManager));
                 api.getInteractionController().registerCommand(new LinkInteractionCommand(linkManager));
                 api.getInteractionController().registerCommand(new UnlinkInteractionCommand(linkManager));
+                api.getInteractionController().registerCommand(new RoleInfoCommand());
             } catch (InteractionException e) {
                 e.printStackTrace();
                 setEnabled(false);
