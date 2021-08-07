@@ -3,6 +3,7 @@ package com.earth2me.essentials.perm.impl;
 import com.earth2me.essentials.perm.IPermissionsHandler;
 import com.earth2me.essentials.utils.TriState;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -19,12 +20,12 @@ public class SuperpermsHandler implements IPermissionsHandler {
     }
 
     @Override
-    public String getGroup(final Player base) {
+    public String getGroup(final OfflinePlayer base) {
         return null;
     }
 
     @Override
-    public List<String> getGroups(final Player base) {
+    public List<String> getGroups(final OfflinePlayer base) {
         return null;
     }
 

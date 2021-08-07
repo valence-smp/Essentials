@@ -11,6 +11,7 @@ import net.essentialsx.discordlink.commands.discord.LinkInteractionCommand;
 import net.essentialsx.discordlink.commands.discord.RoleInfoCommand;
 import net.essentialsx.discordlink.commands.discord.UnlinkInteractionCommand;
 import net.essentialsx.discordlink.listeners.LinkBukkitListener;
+import net.essentialsx.discordlink.rolesync.RoleSyncManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +33,7 @@ public class EssentialsDiscordLink extends JavaPlugin {
     private DiscordLinkSettings settings;
     private AccountStorage accounts;
     private AccountLinkManager linkManager;
+    private RoleSyncManager roleSyncManager;
 
     @Override
     public void onEnable() {
@@ -57,6 +59,8 @@ public class EssentialsDiscordLink extends JavaPlugin {
             setEnabled(false);
             return;
         }
+
+        roleSyncManager = new RoleSyncManager(this);
 
         getServer().getPluginManager().registerEvents(new LinkBukkitListener(this), this);
 
@@ -85,6 +89,12 @@ public class EssentialsDiscordLink extends JavaPlugin {
     public void onDisable() {
         if (accounts != null) {
             accounts.shutdown();
+        }
+    }
+
+    public void onReload() {
+        if (roleSyncManager != null) {
+            roleSyncManager.onReload();
         }
     }
 

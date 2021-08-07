@@ -27,12 +27,14 @@ unlink-on-leave: true
 # Allows for the ability to give players discord roles based on their Minecraft groups and/or give players Minecraft
 # groups based on their Discord roles.
 role-sync:
-  # Whether EssentialsX DiscordLink should remove synced Discord roles from players who unlink their Minecraft account
-  # or leave the Discord server.
+  # Whether EssentialsX DiscordLink should remove synced Discord roles from players who unlink their Minecraft account,
+  # leave the Discord server, or who no longer have the groups that awarded them the role in the first place.
   remove-roles: true
-  # Whether EssentialsX DiscordLink should remove synced Minecraft groups from players who unlink their Discord account.
+  # Whether EssentialsX DiscordLink should remove synced Minecraft groups from players who unlink their Discord account,
+  # or who no longer have the Discord roles that awarded them the group in the first place.
   remove-groups: true
   # The amount of time (in minutes) between which EssentialsX DiscordLink should audit player groups/roles.
+  # Requires a restart after changing.
   resync-delay: 5
   # Whether EssentialsX DiscordLink should only consider the primary group of Minecraft users
   primary-group-only: false

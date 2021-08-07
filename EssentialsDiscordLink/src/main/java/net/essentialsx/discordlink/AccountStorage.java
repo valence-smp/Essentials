@@ -66,6 +66,12 @@ public class AccountStorage {
         }, 0, 10, TimeUnit.SECONDS);
     }
 
+    public Map<String, String> getRawStorageMap() {
+        synchronized (uuidToDiscordIdMap) {
+            return new HashMap<>(uuidToDiscordIdMap);
+        }
+    }
+
     public void add(final UUID uuid, final String discordId) {
         synchronized (uuidToDiscordIdMap) {
             uuidToDiscordIdMap.values().removeIf(discordId::equals);
