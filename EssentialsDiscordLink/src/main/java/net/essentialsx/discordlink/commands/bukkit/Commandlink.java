@@ -15,6 +15,11 @@ public class Commandlink extends EssentialsCommand {
     @Override
     protected void run(Server server, User user, String commandLabel, String[] args) {
         final AccountLinkManager manager = (AccountLinkManager) module;
+        if (manager.isLinked(user.getUUID())) {
+            user.sendMessage(tl("discordLinkLinkedAlready"));
+            return;
+        }
+
         try {
             final String code = manager.createCode(user.getBase().getUniqueId());
             user.sendMessage(tl("discordLinkLinked", "/link " + code));
