@@ -1,5 +1,8 @@
 package net.essentialsx.discordlink;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -12,7 +15,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +27,7 @@ public class AccountStorage {
     private final Gson gson = new Gson();
     private final EssentialsDiscordLink plugin;
     private final File accountFile;
-    private final ConcurrentHashMap<String, String> uuidToDiscordIdMap;
+    private final BiMap<String, String> uuidToDiscordIdMap;
     private final AtomicBoolean mapDirty = new AtomicBoolean(false);
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -41,7 +43,7 @@ public class AccountStorage {
         try (final Reader reader = new FileReader(accountFile)) {
             //noinspection UnstableApiUsage
             final Map<String, String> map = gson.fromJson(reader, new TypeToken<Map<String, String>>() {}.getType());
-            uuidToDiscordIdMap = map == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(map);
+            uuidToDiscordIdMap = map == null ? Maps.synchronizedBiMap(HashBiMap.create()) : Maps.synchronizedBiMap(HashBiMap.create(map));
         }
 
         executorService.scheduleAtFixedRate(() -> {
@@ -66,16 +68,15 @@ public class AccountStorage {
         }, 0, 10, TimeUnit.SECONDS);
     }
 
-    public Map<String, String> getRawStorageMap() {
+    public BiMap<String, String> getRawStorageMap() {
         synchronized (uuidToDiscordIdMap) {
-            return new HashMap<>(uuidToDiscordIdMap);
+            return HashBiMap.create(uuidToDiscordIdMap);
         }
     }
 
     public void add(final UUID uuid, final String discordId) {
         synchronized (uuidToDiscordIdMap) {
-            uuidToDiscordIdMap.values().removeIf(discordId::equals);
-            uuidToDiscordIdMap.put(uuid.toString(), discordId);
+            uuidToDiscordIdMap.forcePut(uuid.toString(), discordId);
             queueSave();
         }
     }
@@ -98,13 +99,8 @@ public class AccountStorage {
 
     public UUID getUUID(final String discordId) {
         synchronized (uuidToDiscordIdMap) {
-            for (Map.Entry<String, String> entry : uuidToDiscordIdMap.entrySet()) {
-                if (entry.getValue().equals(discordId)) {
-                    return UUID.fromString(entry.getKey());
-                }
-            }
+            return UUID.fromString(uuidToDiscordIdMap.inverse().get(discordId));
         }
-        return null;
     }
 
     public String getDiscordId(final UUID uuid) {
