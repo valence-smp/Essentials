@@ -9,6 +9,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface IPermissionsHandler {
+    boolean addToGroup(OfflinePlayer base, String group);
+
+    boolean removeFromGroup(OfflinePlayer base, String group);
+
     String getGroup(OfflinePlayer base);
 
     List<String> getGroups(OfflinePlayer base);

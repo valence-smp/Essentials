@@ -54,6 +54,16 @@ public abstract class AbstractVaultHandler extends SuperpermsHandler {
     }
 
     @Override
+    public boolean addToGroup(OfflinePlayer base, String group) {
+        return perms.playerAddGroup(null, base, group);
+    }
+
+    @Override
+    public boolean removeFromGroup(OfflinePlayer base, String group) {
+        return perms.playerRemoveGroup(null, base, group);
+    }
+
+    @Override
     public boolean inGroup(final Player base, final String group) {
         return perms.playerInGroup(base, group);
     }

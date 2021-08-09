@@ -20,6 +20,16 @@ public class SuperpermsHandler implements IPermissionsHandler {
     }
 
     @Override
+    public boolean addToGroup(OfflinePlayer base, String group) {
+        return false;
+    }
+
+    @Override
+    public boolean removeFromGroup(OfflinePlayer base, String group) {
+        return false;
+    }
+
+    @Override
     public String getGroup(final OfflinePlayer base) {
         return null;
     }

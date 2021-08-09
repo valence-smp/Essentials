@@ -67,6 +67,22 @@ public class PermissionsHandler implements IPermissionsHandler {
     }
 
     @Override
+    public boolean addToGroup(OfflinePlayer base, String group) {
+        final long start = System.nanoTime();
+        final boolean result = handler.addToGroup(base, group);
+        checkPermLag(start, String.format("Adding group to %s", base.getName()));
+        return result;
+    }
+
+    @Override
+    public boolean removeFromGroup(OfflinePlayer base, String group) {
+        final long start = System.nanoTime();
+        final boolean result = handler.removeFromGroup(base, group);
+        checkPermLag(start, String.format("Removing group from %s", base.getName()));
+        return result;
+    }
+
+    @Override
     public boolean canBuild(final Player base, final String group) {
         return handler.canBuild(base, group);
     }
