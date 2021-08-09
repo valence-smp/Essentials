@@ -53,7 +53,6 @@ public class EssentialsDiscordLink extends JavaPlugin {
         ess.addReloadListener(settings);
         try {
             accounts = new AccountStorage(this);
-            linkManager = new AccountLinkManager(this, accounts);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Unable to create link accounts file", e);
             setEnabled(false);
@@ -61,6 +60,7 @@ public class EssentialsDiscordLink extends JavaPlugin {
         }
 
         roleSyncManager = new RoleSyncManager(this);
+        linkManager = new AccountLinkManager(this, accounts, roleSyncManager);
 
         getServer().getPluginManager().registerEvents(new LinkBukkitListener(this), this);
 
@@ -108,6 +108,10 @@ public class EssentialsDiscordLink extends JavaPlugin {
 
     public DiscordLinkSettings getSettings() {
         return settings;
+    }
+
+    public AccountStorage getAccountStorage() {
+        return accounts;
     }
 
     public AccountLinkManager getLinkManager() {

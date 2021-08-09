@@ -3,6 +3,7 @@ package net.essentialsx.discordlink;
 import com.earth2me.essentials.IEssentialsModule;
 import net.ess3.api.IUser;
 import net.essentialsx.api.v2.services.discord.InteractionMember;
+import net.essentialsx.discordlink.rolesync.RoleSyncManager;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,12 +17,14 @@ public class AccountLinkManager implements IEssentialsModule {
 
     private final EssentialsDiscordLink ess;
     private final AccountStorage storage;
+    private final RoleSyncManager roleSyncManager;
 
     private final Map<String, UUID> codeToUuidMap = new ConcurrentHashMap<>();
 
-    public AccountLinkManager(EssentialsDiscordLink ess, AccountStorage storage) {
+    public AccountLinkManager(EssentialsDiscordLink ess, AccountStorage storage, RoleSyncManager roleSyncManager) {
         this.ess = ess;
         this.storage = storage;
+        this.roleSyncManager = roleSyncManager;
     }
 
     public boolean isLinked(final UUID uuid) {
@@ -74,6 +77,7 @@ public class AccountLinkManager implements IEssentialsModule {
             ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(ess.getEss().getUser(uuid), member, false));
             return true;
         }
+        ess.getEss().runTaskAsynchronously(() -> roleSyncManager.unSync(uuid, member.getId()));
         return false;
     }
 
@@ -83,12 +87,14 @@ public class AccountLinkManager implements IEssentialsModule {
             ess.getApi().getMemberById(id).thenAccept(member -> ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(user, member, false)));
             return true;
         }
+        ess.getEss().runTaskAsynchronously(() -> roleSyncManager.unSync(user.getBase().getUniqueId(), id));
         return false;
     }
 
     public void registerAccount(final UUID uuid, final InteractionMember member) {
         storage.add(uuid, member.getId());
         ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(ess.getEss().getUser(uuid), member, true));
+        ess.getEss().runTaskAsynchronously(() -> roleSyncManager.sync(uuid, member.getId()));
     }
 
     private String generateCode() {
