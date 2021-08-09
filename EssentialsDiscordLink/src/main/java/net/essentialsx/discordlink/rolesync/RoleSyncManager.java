@@ -63,6 +63,15 @@ public class RoleSyncManager implements Listener {
                 Collections.singletonList(ess.getEss().getPermissionsHandler().getGroup(player)) : ess.getEss().getPermissionsHandler().getGroups(player);
         final InteractionMember member = ess.getApi().getMemberById(discordId).join();
 
+        if (member == null) {
+            if (ess.getSettings().isUnlinkOnLeave()) {
+                ess.getLinkManager().removeAccount(ess.getEss().getUser(player.getUniqueId()));
+            } else {
+                unSync(player.getUniqueId(), discordId);
+            }
+            return;
+        }
+
         final List<InteractionRole> toAdd = new ArrayList<>();
         final List<InteractionRole> toRemove = new ArrayList<>();
 
@@ -108,7 +117,8 @@ public class RoleSyncManager implements Listener {
             }
         }
 
-        if (removeRoles) {
+        // Check if the member is no longer in the guild (null), they don't have any roles anyway.
+        if (removeRoles && member != null) {
             ess.getApi().modifyMemberRoles(member, null, groupToRoleMapCopy.values());
         }
     }
