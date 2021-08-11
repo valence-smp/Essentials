@@ -4,7 +4,9 @@ import com.earth2me.essentials.IEssentialsModule;
 import net.ess3.api.IUser;
 import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.InteractionMember;
+import net.essentialsx.api.v2.services.discordlink.DiscordLinkService;
 import net.essentialsx.discordlink.rolesync.RoleSyncManager;
+import org.apache.commons.lang.Validate;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class AccountLinkManager implements IEssentialsModule {
+public class AccountLinkManager implements IEssentialsModule, DiscordLinkService {
     private static final char[] CODE_CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
 
     private final EssentialsDiscordLink ess;
@@ -26,14 +28,6 @@ public class AccountLinkManager implements IEssentialsModule {
         this.ess = ess;
         this.storage = storage;
         this.roleSyncManager = roleSyncManager;
-    }
-
-    public boolean isLinked(final UUID uuid) {
-        return getDiscordId(uuid) != null;
-    }
-
-    public boolean isLinked(final String discordId) {
-        return getUUID(discordId) != null;
     }
 
     public String createCode(final UUID uuid) throws IllegalArgumentException {
@@ -56,6 +50,7 @@ public class AccountLinkManager implements IEssentialsModule {
         }
     }
 
+    @Override
     public String getDiscordId(final UUID uuid) {
         return storage.getDiscordId(uuid);
     }
@@ -68,8 +63,21 @@ public class AccountLinkManager implements IEssentialsModule {
         return ess.getEss().getUser(uuid);
     }
 
+    @Override
     public UUID getUUID(final String discordId) {
         return storage.getUUID(discordId);
+    }
+
+    @Override
+    public boolean unlinkAccount(InteractionMember member) {
+        Validate.notNull(member, "member cannot be null");
+
+        if (!isLinked(member.getId())) {
+            return false;
+        }
+
+        removeAccount(member, DiscordLinkStatusChangeEvent.Cause.UNSYNC_API);
+        return true;
     }
 
     public boolean removeAccount(final InteractionMember member, final DiscordLinkStatusChangeEvent.Cause cause) {
@@ -85,6 +93,18 @@ public class AccountLinkManager implements IEssentialsModule {
         return false;
     }
 
+    @Override
+    public boolean unlinkAccount(UUID uuid) {
+        Validate.notNull(uuid, "uuid cannot be null");
+
+        if (!isLinked(uuid)) {
+            return false;
+        }
+
+        ensureAsync(() -> removeAccount(ess.getEss().getUser(uuid), DiscordLinkStatusChangeEvent.Cause.UNSYNC_API));
+        return true;
+    }
+
     public boolean removeAccount(final IUser user, final DiscordLinkStatusChangeEvent.Cause cause) {
         final String id = getDiscordId(user.getBase().getUniqueId());
         if (storage.remove(user.getBase().getUniqueId())) {
@@ -94,6 +114,19 @@ public class AccountLinkManager implements IEssentialsModule {
         }
         ensureAsync(() -> roleSyncManager.unSync(user.getBase().getUniqueId(), id));
         return false;
+    }
+
+    @Override
+    public boolean linkAccount(UUID uuid, InteractionMember member) {
+        Validate.notNull(uuid, "uuid cannot be null");
+        Validate.notNull(member, "member cannot be null");
+
+        if (isLinked(uuid) || isLinked(member.getId())) {
+            return false;
+        }
+
+        registerAccount(uuid, member, DiscordLinkStatusChangeEvent.Cause.SYNC_API);
+        return true;
     }
 
     public void registerAccount(final UUID uuid, final InteractionMember member, final DiscordLinkStatusChangeEvent.Cause cause) {

@@ -5,6 +5,7 @@ import com.earth2me.essentials.metrics.MetricsWrapper;
 import com.google.common.collect.ImmutableSet;
 import net.essentialsx.api.v2.services.discord.DiscordService;
 import net.essentialsx.api.v2.services.discord.InteractionException;
+import net.essentialsx.api.v2.services.discordlink.DiscordLinkService;
 import net.essentialsx.discord.EssentialsDiscord;
 import net.essentialsx.discordlink.commands.discord.AccountInteractionCommand;
 import net.essentialsx.discordlink.commands.discord.LinkInteractionCommand;
@@ -14,6 +15,7 @@ import net.essentialsx.discordlink.listeners.LinkBukkitListener;
 import net.essentialsx.discordlink.rolesync.RoleSyncManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -63,6 +65,7 @@ public class EssentialsDiscordLink extends JavaPlugin {
         linkManager = new AccountLinkManager(this, accounts, roleSyncManager);
 
         getServer().getPluginManager().registerEvents(new LinkBukkitListener(this), this);
+        getServer().getServicesManager().register(DiscordLinkService.class, linkManager, this, ServicePriority.Normal);
 
         if (!(api.getInteractionController().getCommand("link") instanceof LinkInteractionCommand)) {
             try {
