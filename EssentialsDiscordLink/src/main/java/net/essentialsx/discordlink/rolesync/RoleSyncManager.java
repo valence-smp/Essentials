@@ -2,6 +2,7 @@ package net.essentialsx.discordlink.rolesync;
 
 import com.earth2me.essentials.UUIDPlayer;
 import com.google.common.collect.BiMap;
+import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.InteractionMember;
 import net.essentialsx.api.v2.services.discord.InteractionRole;
 import net.essentialsx.discordlink.EssentialsDiscordLink;
@@ -65,7 +66,7 @@ public class RoleSyncManager implements Listener {
 
         if (member == null) {
             if (ess.getSettings().isUnlinkOnLeave()) {
-                ess.getLinkManager().removeAccount(ess.getEss().getUser(player.getUniqueId()));
+                ess.getLinkManager().removeAccount(ess.getEss().getUser(player.getUniqueId()), DiscordLinkStatusChangeEvent.Cause.UNSYNC_LEAVE);
             } else {
                 unSync(player.getUniqueId(), discordId);
             }

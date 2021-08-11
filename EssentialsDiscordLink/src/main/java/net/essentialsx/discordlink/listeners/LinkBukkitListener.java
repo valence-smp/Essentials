@@ -2,10 +2,10 @@ package net.essentialsx.discordlink.listeners;
 
 import net.essentialsx.api.v2.events.AsyncUserDataLoadEvent;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
+import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.MessageType;
 import net.essentialsx.discordlink.DiscordLinkSettings;
 import net.essentialsx.discordlink.EssentialsDiscordLink;
-import net.essentialsx.discordlink.UserLinkStatusChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -115,14 +115,12 @@ public class LinkBukkitListener implements Listener {
     }
 
     @EventHandler
-    public void onUserLinkStatusChange(final UserLinkStatusChangeEvent event) {
+    public void onUserLinkStatusChange(final DiscordLinkStatusChangeEvent event) {
         if (event.isLinked()) {
             event.getUser().setFreeze(false);
-            //todo link logic for roles or whatever
             return;
         }
 
-        //todo unlink logic for roles or whatever
         switch (ess.getSettings().getLinkPolicy()) {
             case KICK: {
                 String code;

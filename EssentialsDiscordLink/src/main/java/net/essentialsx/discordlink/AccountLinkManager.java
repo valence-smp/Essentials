@@ -2,6 +2,7 @@ package net.essentialsx.discordlink;
 
 import com.earth2me.essentials.IEssentialsModule;
 import net.ess3.api.IUser;
+import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.InteractionMember;
 import net.essentialsx.discordlink.rolesync.RoleSyncManager;
 
@@ -71,30 +72,53 @@ public class AccountLinkManager implements IEssentialsModule {
         return storage.getUUID(discordId);
     }
 
-    public boolean removeAccount(final InteractionMember member) {
+    public boolean removeAccount(final InteractionMember member, final DiscordLinkStatusChangeEvent.Cause cause) {
         final UUID uuid = getUUID(member.getId());
         if (storage.remove(member.getId())) {
-            ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(ess.getEss().getUser(uuid), member, false));
+            ensureAsync(() -> {
+                final IUser user = ess.getEss().getUser(uuid);
+                ensureSync(() -> ess.getServer().getPluginManager().callEvent(new DiscordLinkStatusChangeEvent(user, member, member.getId(), false, cause)));
+            });
             return true;
         }
-        ess.getEss().runTaskAsynchronously(() -> roleSyncManager.unSync(uuid, member.getId()));
+        ensureAsync(() -> roleSyncManager.unSync(uuid, member.getId()));
         return false;
     }
 
-    public boolean removeAccount(final IUser user) {
+    public boolean removeAccount(final IUser user, final DiscordLinkStatusChangeEvent.Cause cause) {
         final String id = getDiscordId(user.getBase().getUniqueId());
         if (storage.remove(user.getBase().getUniqueId())) {
-            ess.getApi().getMemberById(id).thenAccept(member -> ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(user, member, false)));
+            ess.getApi().getMemberById(id).thenAccept(member -> ensureSync(() ->
+                    ess.getServer().getPluginManager().callEvent(new DiscordLinkStatusChangeEvent(user, member, id, false, cause))));
             return true;
         }
-        ess.getEss().runTaskAsynchronously(() -> roleSyncManager.unSync(user.getBase().getUniqueId(), id));
+        ensureAsync(() -> roleSyncManager.unSync(user.getBase().getUniqueId(), id));
         return false;
     }
 
-    public void registerAccount(final UUID uuid, final InteractionMember member) {
+    public void registerAccount(final UUID uuid, final InteractionMember member, final DiscordLinkStatusChangeEvent.Cause cause) {
         storage.add(uuid, member.getId());
-        ess.getServer().getPluginManager().callEvent(new UserLinkStatusChangeEvent(ess.getEss().getUser(uuid), member, true));
-        ess.getEss().runTaskAsynchronously(() -> roleSyncManager.sync(uuid, member.getId()));
+        ensureAsync(() -> roleSyncManager.sync(uuid, member.getId()));
+        ensureAsync(() -> {
+            final IUser user = ess.getEss().getUser(uuid);
+            ensureSync(() -> ess.getServer().getPluginManager().callEvent(new DiscordLinkStatusChangeEvent(user, member, member.getId(), true, cause)));
+        });
+    }
+
+    private void ensureSync(final Runnable runnable) {
+        if (ess.getServer().isPrimaryThread()) {
+            runnable.run();
+            return;
+        }
+        ess.getEss().scheduleSyncDelayedTask(runnable);
+    }
+
+    private void ensureAsync(final Runnable runnable) {
+        if (!ess.getServer().isPrimaryThread()) {
+            runnable.run();
+            return;
+        }
+        ess.getEss().runTaskAsynchronously(runnable);
     }
 
     private String generateCode() {

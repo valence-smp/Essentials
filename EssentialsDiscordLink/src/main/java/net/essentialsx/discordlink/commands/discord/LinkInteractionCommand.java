@@ -1,6 +1,7 @@
 package net.essentialsx.discordlink.commands.discord;
 
 import com.google.common.collect.ImmutableList;
+import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.InteractionCommand;
 import net.essentialsx.api.v2.services.discord.InteractionCommandArgument;
 import net.essentialsx.api.v2.services.discord.InteractionCommandArgumentType;
@@ -34,7 +35,7 @@ public class LinkInteractionCommand implements InteractionCommand {
             return;
         }
 
-        accounts.registerAccount(uuid, event.getMember());
+        accounts.registerAccount(uuid, event.getMember(), DiscordLinkStatusChangeEvent.Cause.SYNC_PLAYER);
         event.reply(tl("discordCommandLinkLinked"));
     }
 

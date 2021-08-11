@@ -1,5 +1,6 @@
 package net.essentialsx.discordlink.commands.discord;
 
+import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.InteractionCommand;
 import net.essentialsx.api.v2.services.discord.InteractionCommandArgument;
 import net.essentialsx.api.v2.services.discord.InteractionEvent;
@@ -18,7 +19,7 @@ public class UnlinkInteractionCommand implements InteractionCommand {
 
     @Override
     public void onCommand(InteractionEvent event) {
-        if (!accounts.removeAccount(event.getMember())) {
+        if (!accounts.removeAccount(event.getMember(), DiscordLinkStatusChangeEvent.Cause.UNSYNC_PLAYER)) {
             event.reply(tl("discordCommandUnlinkInvalidCode"));
             return;
         }
