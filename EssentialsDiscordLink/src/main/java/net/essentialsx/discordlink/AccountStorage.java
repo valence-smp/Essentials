@@ -99,7 +99,8 @@ public class AccountStorage {
 
     public UUID getUUID(final String discordId) {
         synchronized (uuidToDiscordIdMap) {
-            return UUID.fromString(uuidToDiscordIdMap.inverse().get(discordId));
+            final String uuid = uuidToDiscordIdMap.inverse().get(discordId);
+            return uuid == null ? null : UUID.fromString(uuid);
         }
     }
 
