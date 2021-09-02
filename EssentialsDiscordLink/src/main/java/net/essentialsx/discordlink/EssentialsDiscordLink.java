@@ -9,7 +9,6 @@ import net.essentialsx.api.v2.services.discordlink.DiscordLinkService;
 import net.essentialsx.discord.EssentialsDiscord;
 import net.essentialsx.discordlink.commands.discord.AccountInteractionCommand;
 import net.essentialsx.discordlink.commands.discord.LinkInteractionCommand;
-import net.essentialsx.discordlink.commands.discord.RoleInfoCommand;
 import net.essentialsx.discordlink.commands.discord.UnlinkInteractionCommand;
 import net.essentialsx.discordlink.listeners.LinkBukkitListener;
 import net.essentialsx.discordlink.rolesync.RoleSyncManager;
@@ -28,7 +27,6 @@ import static com.earth2me.essentials.I18n.tl;
 public class EssentialsDiscordLink extends JavaPlugin {
     private final static Logger logger = Logger.getLogger("EssentialsDiscordLink");
     private transient IEssentials ess;
-    private transient EssentialsDiscord essDiscord;
     private transient MetricsWrapper metrics = null;
 
     private DiscordService api;
@@ -40,7 +38,7 @@ public class EssentialsDiscordLink extends JavaPlugin {
     @Override
     public void onEnable() {
         ess = (IEssentials) getServer().getPluginManager().getPlugin("Essentials");
-        essDiscord = (EssentialsDiscord) getServer().getPluginManager().getPlugin("EssentialsDiscord");
+        final EssentialsDiscord essDiscord = (EssentialsDiscord) getServer().getPluginManager().getPlugin("EssentialsDiscord");
         if (ess == null || !ess.isEnabled() || essDiscord == null || !essDiscord.isEnabled()) {
             setEnabled(false);
             return;
@@ -72,7 +70,6 @@ public class EssentialsDiscordLink extends JavaPlugin {
                 api.getInteractionController().registerCommand(new AccountInteractionCommand(linkManager));
                 api.getInteractionController().registerCommand(new LinkInteractionCommand(linkManager));
                 api.getInteractionController().registerCommand(new UnlinkInteractionCommand(linkManager));
-                api.getInteractionController().registerCommand(new RoleInfoCommand());
             } catch (InteractionException e) {
                 e.printStackTrace();
                 setEnabled(false);
