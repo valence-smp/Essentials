@@ -40,7 +40,6 @@ public interface DiscordLinkService {
         return getUUID(discordId) != null;
     }
 
-
     /**
      * Links the given {@link UUID} to the given {@link InteractionMember}.
      * <p>
