@@ -15,6 +15,7 @@ EssentialsX Discord Link offers features such as:
 ## Table of Contents
 > * [Setting Up Role Sync](#setting-up-role-sync)
 > * [Linking an Account](#linking-an-account)
+> * [Developer API](#developer-api)
 
 ---
 
