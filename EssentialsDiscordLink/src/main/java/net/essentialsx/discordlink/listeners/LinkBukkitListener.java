@@ -1,9 +1,12 @@
 package net.essentialsx.discordlink.listeners;
 
+import com.earth2me.essentials.utils.FormatUtil;
 import net.essentialsx.api.v2.events.AsyncUserDataLoadEvent;
+import net.essentialsx.api.v2.events.UserMailEvent;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.events.discordlink.DiscordLinkStatusChangeEvent;
 import net.essentialsx.api.v2.services.discord.MessageType;
+import net.essentialsx.discord.util.MessageUtil;
 import net.essentialsx.discordlink.DiscordLinkSettings;
 import net.essentialsx.discordlink.EssentialsDiscordLink;
 import org.bukkit.Bukkit;
@@ -22,6 +25,25 @@ public class LinkBukkitListener implements Listener {
 
     public LinkBukkitListener(EssentialsDiscordLink ess) {
         this.ess = ess;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMail(final UserMailEvent event) {
+        if (!ess.getSettings().isRelayMail()) {
+            return;
+        }
+
+        final String discordId = ess.getLinkManager().getDiscordId(event.getRecipient().getBase().getUniqueId());
+        if (discordId == null) {
+            return;
+        }
+
+        final String sanitizedName = MessageUtil.sanitizeDiscordMarkdown(event.getMessage().getSenderUsername());
+        final String sanitizedMessage = MessageUtil.sanitizeDiscordMarkdown(FormatUtil.stripFormat(event.getMessage().getMessage()));
+
+        ess.getApi().getMemberById(discordId).thenAccept(member -> {
+            member.sendPrivateMessage(tl("discordMailLine", sanitizedName, sanitizedMessage));
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGH)

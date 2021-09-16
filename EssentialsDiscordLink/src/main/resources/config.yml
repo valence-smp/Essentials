@@ -23,6 +23,9 @@ block-unlinked-chat: false
 # Whether someone's Minecraft account should be unlinked when they leave the Discord server.
 unlink-on-leave: true
 
+# Whether linked player's incoming mail should be DM'd to them on Discord.
+relay-mail: true
+
 # MC group to Discord role sync settings
 # Allows for the ability to give players discord roles based on their Minecraft groups and/or give players Minecraft
 # groups based on their Discord roles.

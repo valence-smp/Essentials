@@ -36,6 +36,10 @@ public class DiscordLinkSettings implements IConf {
         return config.getBoolean("unlink-on-leave", true);
     }
 
+    public boolean isRelayMail() {
+        return config.getBoolean("relay-mail", true);
+    }
+
     public boolean isRoleSyncRemoveRoles() {
         return config.getBoolean("role-sync.remove-roles", true);
     }
