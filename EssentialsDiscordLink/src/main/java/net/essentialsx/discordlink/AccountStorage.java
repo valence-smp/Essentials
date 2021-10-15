@@ -46,7 +46,7 @@ public class AccountStorage {
             uuidToDiscordIdMap = map == null ? Maps.synchronizedBiMap(HashBiMap.create()) : Maps.synchronizedBiMap(HashBiMap.create(map));
         }
 
-        executorService.scheduleAtFixedRate(() -> {
+        executorService.scheduleWithFixedDelay(() -> {
             if (!mapDirty.compareAndSet(true, false)) {
                 return;
             }
@@ -65,7 +65,7 @@ public class AccountStorage {
                 logger.log(Level.SEVERE, "Failed to save link accounts!", e);
                 mapDirty.set(true); // mark the map as dirty and pray it fixes itself :D
             }
-        }, 0, 10, TimeUnit.SECONDS);
+        }, 10, 10, TimeUnit.SECONDS);
     }
 
     public BiMap<String, String> getRawStorageMap() {
