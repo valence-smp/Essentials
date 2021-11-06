@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.ess3.nms.refl.providers.AchievementListenerProvider;
 import net.ess3.nms.refl.providers.AdvancementListenerProvider;
+import net.ess3.provider.providers.PaperAdvancementListenerProvider;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
 import net.essentialsx.api.v2.services.discord.InteractionController;
@@ -215,7 +216,12 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
 
         try {
             if (VersionUtil.getServerBukkitVersion().isHigherThanOrEqualTo(VersionUtil.v1_12_0_R01)) {
-                Bukkit.getPluginManager().registerEvents(new AdvancementListenerProvider(), plugin);
+                try {
+                    Class.forName("io.papermc.paper.advancement.AdvancementDisplay");
+                    Bukkit.getPluginManager().registerEvents(new PaperAdvancementListenerProvider(), plugin);
+                } catch (ClassNotFoundException e) {
+                    Bukkit.getPluginManager().registerEvents(new AdvancementListenerProvider(), plugin);
+                }
             } else {
                 Bukkit.getPluginManager().registerEvents(new AchievementListenerProvider(), plugin);
             }
@@ -286,9 +292,14 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
         TextChannel channel = guild.getTextChannelById(plugin.getSettings().getPrimaryChannelId());
         if (channel == null) {
             channel = guild.getDefaultChannel();
-            if (channel == null || !channel.canTalk()) {
+            if (channel == null) {
                 throw new RuntimeException(tl("discordErrorNoPerms"));
             }
+            logger.warning(tl("discordErrorNoPrimary", channel.getName()));
+        }
+
+        if (!channel.canTalk()) {
+            throw new RuntimeException(tl("discordErrorNoPrimaryPerms", channel.getName()));
         }
         primaryChannel = channel;
     }
