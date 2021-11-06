@@ -14,9 +14,6 @@
 # - none: Places no restrictions on players for unlinked accounts.
 link-policy: none
 
-# The Discord invite URL that will be shown when a player is told to link their account.
-discord-url: "https://discord.gg/invite-code"
-
 # Whether to ignore Discord messages from unlinked members and hide them from Minecraft chat.
 block-unlinked-chat: false
 

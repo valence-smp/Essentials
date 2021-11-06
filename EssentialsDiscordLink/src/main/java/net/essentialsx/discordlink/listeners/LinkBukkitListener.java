@@ -59,7 +59,7 @@ public class LinkBukkitListener implements Listener {
             } catch (IllegalArgumentException e) {
                 code = e.getMessage();
             }
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, tl("discordLinkLoginKick", "/link " + code, ess.getSettings().getInviteUrl()));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, tl("discordLinkLoginKick", "/link " + code, ess.getApi().getInviteUrl()));
         }
     }
 
@@ -89,7 +89,7 @@ public class LinkBukkitListener implements Listener {
             } catch (IllegalArgumentException e) {
                 code = e.getMessage();
             }
-            event.getPlayer().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getSettings().getInviteUrl()));
+            event.getPlayer().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getApi().getInviteUrl()));
         }
     }
 
@@ -107,7 +107,7 @@ public class LinkBukkitListener implements Listener {
             } catch (IllegalArgumentException e) {
                 code = e.getMessage();
             }
-            event.getPlayer().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getSettings().getInviteUrl()));
+            event.getPlayer().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getApi().getInviteUrl()));
         }
     }
 
@@ -125,7 +125,7 @@ public class LinkBukkitListener implements Listener {
             } catch (IllegalArgumentException e) {
                 code = e.getMessage();
             }
-            event.getUser().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getSettings().getInviteUrl()));
+            event.getUser().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getApi().getInviteUrl()));
         }
     }
 
@@ -152,7 +152,7 @@ public class LinkBukkitListener implements Listener {
                     code = e.getMessage();
                 }
                 final String finalCode = code;
-                final Runnable kickTask = () -> event.getUser().getBase().kickPlayer(tl("discordLinkLoginKick", "/link " + finalCode, ess.getSettings().getInviteUrl()));
+                final Runnable kickTask = () -> event.getUser().getBase().kickPlayer(tl("discordLinkLoginKick", "/link " + finalCode, ess.getApi().getInviteUrl()));
                 if (Bukkit.isPrimaryThread()) {
                     kickTask.run();
                 } else {
@@ -167,7 +167,7 @@ public class LinkBukkitListener implements Listener {
                 } catch (IllegalArgumentException e) {
                     code = e.getMessage();
                 }
-                event.getUser().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getSettings().getInviteUrl()));
+                event.getUser().sendMessage(tl("discordLinkLoginPrompt", "/link " + code, ess.getApi().getInviteUrl()));
                 event.getUser().setFreeze(true);
                 break;
             }

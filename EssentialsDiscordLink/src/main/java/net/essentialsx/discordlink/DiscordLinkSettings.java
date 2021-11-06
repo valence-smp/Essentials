@@ -24,10 +24,6 @@ public class DiscordLinkSettings implements IConf {
         return linkPolicy;
     }
 
-    public String getInviteUrl() {
-        return config.getString("discord-url", "https://discord.gg/invite-code");
-    }
-
     public boolean isBlockUnlinkedChat() {
         return config.getBoolean("block-unlinked-chat", false);
     }
