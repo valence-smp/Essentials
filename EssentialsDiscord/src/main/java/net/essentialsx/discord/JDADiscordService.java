@@ -157,9 +157,9 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
     public void startup() throws LoginException, InterruptedException {
         shutdown();
 
+        invalidStartup = true;
         logger.log(Level.INFO, tl("discordLoggingIn"));
         if (plugin.getSettings().getBotToken().replace("INSERT-TOKEN-HERE", "").trim().isEmpty()) {
-            invalidStartup = true;
             throw new IllegalArgumentException(tl("discordErrorNoToken"));
         }
 
@@ -170,6 +170,7 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
                 .setContextEnabled(false)
                 .build()
                 .awaitReady();
+        invalidStartup = false;
         updatePresence();
         logger.log(Level.INFO, tl("discordLoggingInDone", jda.getSelfUser().getAsTag()));
 
