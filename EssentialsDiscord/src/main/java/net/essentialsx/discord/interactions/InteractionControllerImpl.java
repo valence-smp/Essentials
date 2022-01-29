@@ -1,11 +1,13 @@
 package net.essentialsx.discord.interactions;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.essentialsx.api.v2.services.discord.InteractionCommand;
 import net.essentialsx.api.v2.services.discord.InteractionCommandArgument;
@@ -41,7 +43,7 @@ public class InteractionControllerImpl extends ListenerAdapter implements Intera
     }
 
     @Override
-    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if (event.getGuild() == null || event.getMember() == null || !commandMap.containsKey(event.getName())) {
             return;
         }
@@ -73,7 +75,7 @@ public class InteractionControllerImpl extends ListenerAdapter implements Intera
             initialBatchRegistration = true;
             final List<CommandData> list = new ArrayList<>();
             for (final InteractionCommand command : batchRegistrationQueue.values()) {
-                final CommandData data = new CommandData(command.getName(), command.getDescription());
+                final SlashCommandData data = Commands.slash(command.getName(), command.getDescription());
                 if (command.getArguments() != null) {
                     for (final InteractionCommandArgument argument : command.getArguments()) {
                         data.addOption(OptionType.valueOf(argument.getType().name()), argument.getName(), argument.getDescription(), argument.isRequired());
@@ -126,7 +128,7 @@ public class InteractionControllerImpl extends ListenerAdapter implements Intera
             return;
         }
 
-        final CommandData data = new CommandData(command.getName(), command.getDescription());
+        final SlashCommandData data = Commands.slash(command.getName(), command.getDescription());
         if (command.getArguments() != null) {
             for (final InteractionCommandArgument argument : command.getArguments()) {
                 data.addOption(OptionType.valueOf(argument.getType().name()), argument.getName(), argument.getDescription(), argument.isRequired());
