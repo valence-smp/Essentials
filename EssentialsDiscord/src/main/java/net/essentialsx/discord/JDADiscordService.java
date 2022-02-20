@@ -284,10 +284,10 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
     public void updatePrimaryChannel() {
         TextChannel channel = guild.getTextChannelById(plugin.getSettings().getPrimaryChannelId());
         if (channel == null) {
-            channel = guild.getDefaultChannel();
-            if (channel == null) {
+            if (!(guild.getDefaultChannel() instanceof TextChannel)) {
                 throw new RuntimeException(tl("discordErrorNoPerms"));
             }
+            channel = (TextChannel) guild.getDefaultChannel();
             logger.warning(tl("discordErrorNoPrimary", channel.getName()));
         }
 
