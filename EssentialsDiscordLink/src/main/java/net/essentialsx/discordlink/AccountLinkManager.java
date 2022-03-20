@@ -31,23 +31,19 @@ public class AccountLinkManager implements IEssentialsModule, DiscordLinkService
     }
 
     public String createCode(final UUID uuid) throws IllegalArgumentException {
-        synchronized (codeToUuidMap) {
-            final Optional<Map.Entry<String, UUID>> prevCode = codeToUuidMap.entrySet().stream().filter(stringUUIDEntry -> stringUUIDEntry.getValue().equals(uuid)).findFirst();
-            if (prevCode.isPresent()) {
-                throw new IllegalArgumentException(prevCode.get().getKey());
-            }
-
-            final String code = generateCode();
-
-            codeToUuidMap.put(code, uuid);
-            return code;
+        final Optional<Map.Entry<String, UUID>> prevCode = codeToUuidMap.entrySet().stream().filter(stringUUIDEntry -> stringUUIDEntry.getValue().equals(uuid)).findFirst();
+        if (prevCode.isPresent()) {
+            throw new IllegalArgumentException(prevCode.get().getKey());
         }
+
+        final String code = generateCode();
+
+        codeToUuidMap.put(code, uuid);
+        return code;
     }
 
     public UUID getPendingUUID(final String code) {
-        synchronized (codeToUuidMap) {
-            return codeToUuidMap.remove(code);
-        }
+        return codeToUuidMap.remove(code);
     }
 
     @Override

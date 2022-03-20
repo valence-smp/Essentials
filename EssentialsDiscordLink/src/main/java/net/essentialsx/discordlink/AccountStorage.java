@@ -56,9 +56,7 @@ public class AccountStorage {
             }
 
             final Map<String, String> clone;
-            synchronized (uuidToDiscordIdMap) {
-                clone = new HashMap<>(uuidToDiscordIdMap);
-            }
+            clone = new HashMap<>(uuidToDiscordIdMap);
             try (final Writer writer = new FileWriter(accountFile)) {
                 gson.toJson(clone, writer);
             } catch (IOException e) {
@@ -69,45 +67,33 @@ public class AccountStorage {
     }
 
     public BiMap<String, String> getRawStorageMap() {
-        synchronized (uuidToDiscordIdMap) {
-            return HashBiMap.create(uuidToDiscordIdMap);
-        }
+        return HashBiMap.create(uuidToDiscordIdMap);
     }
 
     public void add(final UUID uuid, final String discordId) {
-        synchronized (uuidToDiscordIdMap) {
-            uuidToDiscordIdMap.forcePut(uuid.toString(), discordId);
-            queueSave();
-        }
+        uuidToDiscordIdMap.forcePut(uuid.toString(), discordId);
+        queueSave();
     }
 
     public boolean remove(final UUID uuid) {
-        synchronized (uuidToDiscordIdMap) {
-            final boolean success = uuidToDiscordIdMap.remove(uuid.toString()) != null;
-            queueSave();
-            return success;
-        }
+        final boolean success = uuidToDiscordIdMap.remove(uuid.toString()) != null;
+        queueSave();
+        return success;
     }
 
     public boolean remove(final String discordId) {
-        synchronized (uuidToDiscordIdMap) {
-            final boolean success = uuidToDiscordIdMap.values().removeIf(discordId::equals);
-            queueSave();
-            return success;
-        }
+        final boolean success = uuidToDiscordIdMap.values().removeIf(discordId::equals);
+        queueSave();
+        return success;
     }
 
     public UUID getUUID(final String discordId) {
-        synchronized (uuidToDiscordIdMap) {
-            final String uuid = uuidToDiscordIdMap.inverse().get(discordId);
-            return uuid == null ? null : UUID.fromString(uuid);
-        }
+        final String uuid = uuidToDiscordIdMap.inverse().get(discordId);
+        return uuid == null ? null : UUID.fromString(uuid);
     }
 
     public String getDiscordId(final UUID uuid) {
-        synchronized (uuidToDiscordIdMap) {
-            return uuidToDiscordIdMap.get(uuid.toString());
-        }
+        return uuidToDiscordIdMap.get(uuid.toString());
     }
 
     public void queueSave() {
@@ -115,22 +101,20 @@ public class AccountStorage {
     }
 
     public void shutdown() {
-        synchronized (uuidToDiscordIdMap) {
-            try {
-                executorService.shutdown();
-                if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
-                    logger.log(Level.SEVERE, "Timed out while saving!");
-                    executorService.shutdownNow();
-                }
-                if (mapDirty.get()) {
-                    try (final Writer writer = new FileWriter(accountFile)) {
-                        gson.toJson(uuidToDiscordIdMap, writer);
-                    }
-                }
-            } catch (InterruptedException | IOException e) {
-                logger.log(Level.SEVERE, "Failed to shutdown link accounts save!", e);
+        try {
+            executorService.shutdown();
+            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                logger.log(Level.SEVERE, "Timed out while saving!");
                 executorService.shutdownNow();
             }
+            if (mapDirty.get()) {
+                try (final Writer writer = new FileWriter(accountFile)) {
+                    gson.toJson(uuidToDiscordIdMap, writer);
+                }
+            }
+        } catch (InterruptedException | IOException e) {
+            logger.log(Level.SEVERE, "Failed to shutdown link accounts save!", e);
+            executorService.shutdownNow();
         }
     }
 }
