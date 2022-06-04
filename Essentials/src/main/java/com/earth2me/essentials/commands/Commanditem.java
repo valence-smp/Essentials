@@ -32,7 +32,7 @@ public class Commanditem extends EssentialsCommand {
 
     static {
         try {
-            fh = new FileHandler(Bukkit.getPluginManager().getPlugin("Essentials").getDataFolder() + "/items-spawning.log");
+            fh = new FileHandler(Bukkit.getPluginManager().getPlugin("Essentials").getDataFolder() + "items-spawning.log");
             logger.addHandler(fh);
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
