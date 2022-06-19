@@ -406,6 +406,8 @@ public interface ISettings extends IConf {
 
     boolean showZeroBaltop();
 
+    String getWebhookURL();
+
     enum KeepInvPolicy {
         KEEP,
         DELETE,

@@ -137,6 +137,9 @@ public class Settings implements net.ess3.api.ISettings {
     private boolean removeEffectsOnHeal;
     private Map<String, String> worldAliases;
 
+
+    private String webhookURL;
+
     public Settings(final IEssentials ess) {
         this.ess = ess;
         config = new EssentialsConfiguration(new File(ess.getDataFolder(), "config.yml"), "/config.yml");
@@ -466,6 +469,12 @@ public class Settings implements net.ess3.api.ISettings {
     private String _getNicknamePrefix() {
         return config.getString("nickname-prefix", "~");
     }
+
+    @Override
+    public String getWebhookURL() {
+        return config.getString("webhook-url", "");
+    }
+
 
     @Override
     public String getNicknamePrefix() {
