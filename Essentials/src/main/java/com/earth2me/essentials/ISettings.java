@@ -432,6 +432,8 @@ public interface ISettings extends IConf {
 
     long getBaltopMinPlaytime();
 
+    String getWebhookURL();
+
     enum KeepInvPolicy {
         KEEP,
         DELETE,
