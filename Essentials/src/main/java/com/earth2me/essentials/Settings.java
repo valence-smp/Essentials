@@ -827,7 +827,7 @@ public class Settings implements net.ess3.api.ISettings {
                 final ItemStack iStack = itemDb.get(itemName);
                 epItemSpwn.add(iStack.getType());
             } catch (final Exception ex) {
-                ess.getLogger().log(Level.SEVERE, tlLiteral("unknownItemInList", itemName, "item-spawn-blacklist"), ex);
+                ess.getLogger().log(Level.SEVERE, AdventureUtil.miniToLegacy(tlLiteral("unknownItemInList", itemName, "item-spawn-blacklist")), ex);
             }
         }
         return epItemSpwn;
@@ -855,7 +855,7 @@ public class Settings implements net.ess3.api.ISettings {
             try {
                 newSigns.add(Signs.valueOf(signName).getSign());
             } catch (final Exception ex) {
-                ess.getLogger().log(Level.SEVERE, tlLiteral("unknownItemInList", signName, "enabledSigns"));
+                ess.getLogger().log(Level.SEVERE, AdventureUtil.miniToLegacy(tlLiteral("unknownItemInList", signName, "enabledSigns")));
                 continue;
             }
             signsEnabled = true;
@@ -974,7 +974,7 @@ public class Settings implements net.ess3.api.ISettings {
             }
 
             if (mat == null) {
-                ess.getLogger().log(Level.SEVERE, tlLiteral("unknownItemInList", itemName, configName));
+                ess.getLogger().log(Level.SEVERE, AdventureUtil.miniToLegacy(tlLiteral("unknownItemInList", itemName, configName)));
             } else {
                 list.add(mat);
             }
@@ -1722,7 +1722,7 @@ public class Settings implements net.ess3.api.ISettings {
             try {
                 newSigns.add(Signs.valueOf(signName).getSign());
             } catch (final Exception ex) {
-                ess.getLogger().log(Level.SEVERE, tlLiteral("unknownItemInList", signName, "unprotected-sign-names"));
+                ess.getLogger().log(Level.SEVERE, AdventureUtil.miniToLegacy(tlLiteral("unknownItemInList", signName, "unprotected-sign-names")));
             }
         }
         return newSigns;
