@@ -423,6 +423,10 @@ public interface ISettings extends IConf {
 
     Tag getSecondaryColor();
 
+    BigDecimal getBaltopMinBalance();
+
+    long getBaltopMinPlaytime();
+
     enum KeepInvPolicy {
         KEEP,
         DELETE,
