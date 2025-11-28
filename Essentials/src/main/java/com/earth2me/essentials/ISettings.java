@@ -422,8 +422,6 @@ public interface ISettings extends IConf {
 
     int getMaxItemLore();
 
-    String getWebhookURL();
-
     Tag getPrimaryColor();
 
     Tag getSecondaryColor();

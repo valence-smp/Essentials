@@ -72,6 +72,7 @@ public class Settings implements net.ess3.api.ISettings {
     private char chatQuestion = '?';
     private boolean teleportSafety;
     private boolean forceDisableTeleportSafety;
+    private String webhookURL;
     private Set<String> disabledCommands = new HashSet<>();
     private List<String> overriddenCommands = Collections.emptyList();
     private List<String> playerCommands = Collections.emptyList();
@@ -153,9 +154,6 @@ public class Settings implements net.ess3.api.ISettings {
     private Tag secondaryColor = DEFAULT_SECONDARY_COLOR;
     private Set<String> multiplierPerms;
     private BigDecimal defaultMultiplier;
-
-
-    private String webhookURL;
 
     public Settings(final IEssentials ess) {
         this.ess = ess;
@@ -508,7 +506,6 @@ public class Settings implements net.ess3.api.ISettings {
     public String getWebhookURL() {
         return config.getString("webhook-url", "");
     }
-
 
     @Override
     public String getNicknamePrefix() {
