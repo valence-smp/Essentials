@@ -11,7 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +34,7 @@ public class Commanditem extends EssentialsCommand {
         try {
             fh = new FileHandler(Bukkit.getPluginManager().getPlugin("Essentials").getDataFolder() + "/items-spawning.log");
             logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
+            final SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
         } catch (SecurityException | IOException e) {
             e.printStackTrace();
@@ -85,8 +85,8 @@ public class Commanditem extends EssentialsCommand {
 
         if (!user.getBase().hasPermission("essentials.itemspawn.nolog") && !ess.getSettings().getWebhookURL().isEmpty()) {
 
-            WebhookUtil logWebhook = new WebhookUtil(ess.getSettings().getWebhookURL());
-            WebhookUtil.EmbedObject embedObject = new WebhookUtil.EmbedObject();
+            final WebhookUtil logWebhook = new WebhookUtil(ess.getSettings().getWebhookURL());
+            final WebhookUtil.EmbedObject embedObject = new WebhookUtil.EmbedObject();
             embedObject.setTitle("/i Usage");
             embedObject.setColor(Color.decode("#FFFF00"));
             embedObject.addField("Username:", user.getName(), false);
