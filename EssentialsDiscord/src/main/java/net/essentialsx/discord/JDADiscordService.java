@@ -8,8 +8,12 @@ import com.earth2me.essentials.User;
 import com.earth2me.essentials.utils.FormatUtil;
 import com.earth2me.essentials.utils.NumberUtil;
 import com.earth2me.essentials.utils.VersionUtil;
+import com.google.common.collect.ImmutableList;
+import com.neovisionaries.ws.client.ProxySettings;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -37,11 +41,12 @@ import net.essentialsx.discord.interactions.InteractionRoleImpl;
 import net.essentialsx.discord.interactions.commands.ExecuteCommand;
 import net.essentialsx.discord.interactions.commands.ListCommand;
 import net.essentialsx.discord.interactions.commands.MessageCommand;
+import net.essentialsx.discord.listeners.BukkitChatListener;
 import net.essentialsx.discord.listeners.BukkitListener;
 import net.essentialsx.discord.listeners.DiscordCommandDispatcher;
 import net.essentialsx.discord.listeners.DiscordListener;
 import net.essentialsx.discord.listeners.EssentialsChatListener;
-import net.essentialsx.discord.listeners.BukkitChatListener;
+import net.essentialsx.discord.listeners.PaperChatListener;
 import net.essentialsx.discord.util.ConsoleInjector;
 import net.essentialsx.discord.util.DiscordUtil;
 import net.essentialsx.discord.util.MessageUtil;
@@ -167,7 +172,14 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
             throw new IllegalArgumentException(tlLiteral("discordErrorNoToken"));
         }
 
+        final WebSocketFactory wsFactory = new WebSocketFactory();
+        if (!plugin.getSettings().getHttpProxyServer().trim().isEmpty()) {
+            final ProxySettings proxySettings = wsFactory.getProxySettings();
+            proxySettings.setServer(plugin.getSettings().getHttpProxyServer());
+        }
+
         jda = JDABuilder.createDefault(plugin.getSettings().getBotToken())
+                .setWebsocketFactory(wsFactory)
                 .addEventListeners(new DiscordListener(this))
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .enableCache(CacheFlag.EMOJI)
@@ -188,6 +200,17 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
         if (guild == null) {
             invalidStartup = true;
             throw new IllegalArgumentException(tlLiteral("discordErrorNoGuild"));
+        }
+
+        final Collection<Permission> requiredPermissions = ImmutableList.of(Permission.MANAGE_WEBHOOKS, Permission.MANAGE_ROLES, Permission.NICKNAME_MANAGE, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS);
+        final String[] missingPermissions = requiredPermissions.stream()
+                .filter(permission -> !guild.getSelfMember().hasPermission(permission))
+                .map(Permission::getName)
+                .toArray(String[]::new);
+
+        if (missingPermissions.length > 0) {
+            invalidStartup = true;
+            throw new IllegalArgumentException(tlLiteral("discordErrorInvalidPerms", String.join(", ", missingPermissions)));
         }
 
         interactionController = new InteractionControllerImpl(this);
@@ -350,9 +373,13 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
             chatListener = null;
         }
 
-        chatListener = getSettings().isUseEssentialsEvents() && plugin.isEssentialsChat()
-            ? new EssentialsChatListener(this)
-            : new BukkitChatListener(this);
+        if (getSettings().isUseEssentialsEvents() && plugin.isEssentialsChat()) {
+            chatListener = new EssentialsChatListener(this);
+        } else if (VersionUtil.getServerBukkitVersion().isHigherThanOrEqualTo(VersionUtil.v1_16_5_R01) && VersionUtil.isPaper() && plugin.getEss().getSettings().isUsePaperChatEvent()) {
+            chatListener = new PaperChatListener(this);
+        } else {
+            chatListener = new BukkitChatListener(this);
+        }
 
         Bukkit.getPluginManager().registerEvents(chatListener, plugin);
     }
@@ -362,7 +389,7 @@ public class JDADiscordService implements DiscordService, IEssentialsModule {
     }
 
     public void updateTypesRelay() {
-        if (!getSettings().isShowAvatar() && !getSettings().isShowName() && !getSettings().isShowDisplayName()) {
+        if (!getSettings().isShowAvatar() && !getSettings().isCustomBotName()) {
             for (WrappedWebhookClient webhook : channelIdToWebhook.values()) {
                 webhook.close();
             }

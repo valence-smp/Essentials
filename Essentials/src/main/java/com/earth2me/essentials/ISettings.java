@@ -56,6 +56,8 @@ public interface ISettings extends IConf {
 
     boolean isChatQuestionEnabled();
 
+    boolean isUsePaperChatEvent();
+
     BigDecimal getCommandCost(IEssentialsCommand cmd);
 
     BigDecimal getCommandCost(String label);
@@ -102,6 +104,8 @@ public interface ISettings extends IConf {
     int getProtectCreeperMaxHeight();
 
     List<Material> getProtectList(final String configName);
+
+    List<String> getProtectListRaw(final String configName);
 
     boolean getProtectPreventSpawn(final String creatureName);
 
@@ -180,6 +184,8 @@ public interface ISettings extends IConf {
 
     boolean isEcoLogEnabled();
 
+    boolean isEcoLogUUIDEnabled();
+
     boolean isEcoLogUpdateEnabled();
 
     boolean realNamesOnList();
@@ -204,7 +210,9 @@ public interface ISettings extends IConf {
 
     long getAutoAfk();
 
-    long getAutoAfkKick();
+    long getAutoAfkTimeout();
+
+    List<String> getAfkTimeoutCommands();
 
     boolean getFreezeAfkPlayers();
 
@@ -312,6 +320,8 @@ public interface ISettings extends IConf {
 
     boolean isCustomServerFullMessage();
 
+    boolean isCustomWhitelistMessage();
+
     boolean isNotifyNoNewMail();
 
     boolean isDropItemsIfFull();
@@ -343,6 +353,10 @@ public interface ISettings extends IConf {
     boolean isCommandCooldownsEnabled();
 
     boolean isWorldChangeFlyResetEnabled();
+
+    boolean isWorldChangePreserveFlying();
+
+    boolean isGamemodeChangePreserveFlying();
 
     boolean isWorldChangeSpeedResetEnabled();
 
@@ -400,6 +414,8 @@ public interface ISettings extends IConf {
 
     boolean logCommandBlockCommands();
 
+    boolean logConsoleCommands();
+
     Set<Predicate<String>> getNickBlacklist();
 
     double getMaxProjectileSpeed();
@@ -418,6 +434,8 @@ public interface ISettings extends IConf {
 
     boolean showZeroBaltop();
 
+    String getNickRegex();
+
     BigDecimal getMultiplier(final User user);
 
     int getMaxItemLore();
@@ -429,6 +447,8 @@ public interface ISettings extends IConf {
     BigDecimal getBaltopMinBalance();
 
     long getBaltopMinPlaytime();
+
+    int getBaltopEntryLimit();
 
     String getWebhookURL();
 

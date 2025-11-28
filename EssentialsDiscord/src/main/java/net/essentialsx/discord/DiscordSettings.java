@@ -50,6 +50,7 @@ public class DiscordSettings implements IConf {
     private MessageFormat permMuteReasonFormat;
     private MessageFormat unmuteFormat;
     private MessageFormat kickFormat;
+    private MessageFormat pmToDiscordFormat;
 
     public DiscordSettings(EssentialsDiscord plugin) {
         this.plugin = plugin;
@@ -59,6 +60,11 @@ public class DiscordSettings implements IConf {
 
     public String getBotToken() {
         return config.getString("token", "");
+    }
+
+    // #easteregg
+    public String getHttpProxyServer() {
+        return config.getString("http-proxy-server", "");
     }
 
     public long getGuildId() {
@@ -199,6 +205,16 @@ public class DiscordSettings implements IConf {
 
     public boolean isShowDisplayName() {
         return config.getBoolean("show-displayname", false);
+    }
+
+    protected boolean isCustomBotName() {
+        if (isShowName() || isShowDisplayName()) {
+            return true;
+        }
+
+        final String format = getFormatString("mc-to-discord-name-format");
+
+        return format != null && !format.isEmpty() && !format.equals("{botname}");
     }
 
     public String getAvatarURL() {
@@ -445,6 +461,10 @@ public class DiscordSettings implements IConf {
         return kickFormat;
     }
 
+    public MessageFormat getPmToDiscordFormat() {
+        return pmToDiscordFormat;
+    }
+
     private String getFormatString(String node) {
         final String pathPrefix = node.startsWith(".") ? "" : "messages.";
         return config.getString(pathPrefix + (pathPrefix.isEmpty() ? node.substring(1) : node), null);
@@ -581,6 +601,8 @@ public class DiscordSettings implements IConf {
                 "username", "displayname", "controllername", "controllerdisplayname", "reason");
         kickFormat = generateMessageFormat(getFormatString("kick"), "{displayname} was kicked with reason: {reason}", false,
                 "username", "displayname", "reason");
+        pmToDiscordFormat = generateMessageFormat(getFormatString("private-chat"), "[SocialSpy] {sender-username} -> {receiver-username}: {message}", false,
+                "sender-username", "sender-displayname", "receiver-username", "receiver-displayname", "message");
 
         plugin.onReload();
     }
